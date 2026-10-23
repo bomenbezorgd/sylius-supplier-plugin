@@ -6,11 +6,11 @@ namespace Lei\SyliusSupplierPlugin\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 
-final class SyliusSupplierPluginExtension extends Extension implements PrependExtensionInterface
+final class SyliusSupplierPluginExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
     public function prepend(ContainerBuilder $container): void
     {
@@ -33,7 +33,21 @@ final class SyliusSupplierPluginExtension extends Extension implements PrependEx
 
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        // Process configuration and register Sylius resources (supplier)
+        $config = $this->processConfiguration($this->getConfiguration($configs, $container), $configs);
+
+        $this->registerResources(
+            'sylius_supplier_plugin',
+            'doctrine/orm',
+            $config['resources'] ?? [],
+            $container
+        );
+
+        // Load services (event listeners etc.)
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        if (file_exists(__DIR__ . '/../Resources/config/services.yml')) {
+            $loader->load('services.yml');
+        }
     }
 
     public function getAlias(): string
