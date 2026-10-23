@@ -14,30 +14,45 @@ Demo by [Sylius PluginSkeleton v1.3.0](https://github.com/Sylius/PluginSkeleton)
     </a>
 </p>
 
-### Install
+### Install (Symfony 6.4 / Sylius 2.x)
 
-* require package `$ composer require e3-lei/sylius-supplier-plugin`
-* add Plugin in the `app/AppKernel.php` with `new Lei\SyliusSupplierPlugin\SyliusSupplierPlugin(),`
-* add configs
-
-```yml
-// app/config/routing.yml
-
-sylius_supplier_plugin_admin:
-    resource: "@SyliusSupplierPlugin/Resources/config/admin_routing.yml"
-```
-
-```yml
-// app/config/config.yml
-
-- { resource: "@SyliusSupplierPlugin/Resources/config/config.yml" }
-```
-
-* run migrations
+- Require the package:
 
 ```bash
-$ php bin/console doctrine:migrations:diff -e dev
-$ php bin/console doctrine:migrations:migrate -e dev
+composer require e3-lei/sylius-supplier-plugin
 ```
 
-* cache clear `php bin/console cache:clear -e dev`
+- Enable the bundle (if not auto-enabled) by adding to `config/bundles.php`:
+
+```php
+return [
+    // ...
+    Lei\SyliusSupplierPlugin\SyliusSupplierPlugin::class => ['all' => true],
+];
+```
+
+- Import the plugin’s admin routes (in `config/routes/sylius_supplier_plugin_admin.yaml`):
+
+```yaml
+sylius_supplier_plugin_admin:
+  resource: "@SyliusSupplierPlugin/Resources/config/admin_routing.yml"
+```
+Import the plugin’s grid configuration if you want the default Admin grid (in `config/packages/sylius_grid.yaml` or a dedicated file):
+
+```yaml
+imports:
+  - { resource: '@SyliusSupplierPlugin/Resources/config/grids/grids.yml' }
+```
+
+- Run migrations as usual (create your own migration after installing the plugin):
+
+```bash
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+```
+
+- Clear cache:
+
+```bash
+php bin/console cache:clear
+```

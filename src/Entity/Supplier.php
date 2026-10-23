@@ -2,21 +2,27 @@
 
 declare(strict_types=1);
 
-/**
- * Created by lei
- */
-
 namespace Lei\SyliusSupplierPlugin\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: \Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository::class)]
+#[ORM\Table(name: 'sylius_supplier_plugin_supplier')]
 class Supplier implements SupplierInterface
 {
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    private $name;
+    #[ORM\Column(type: 'string')]
+    private ?string $name = null;
 
-    private $description;
+    #[ORM\Column(type: 'string')]
+    private ?string $description = null;
 
-    private $enabled;
+    #[ORM\Column(type: 'boolean')]
+    private ?bool $enabled = null;
 
     public function getId(): ?int
     {
@@ -58,7 +64,7 @@ class Supplier implements SupplierInterface
         $this->enabled = $enabled;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->getName();
     }
